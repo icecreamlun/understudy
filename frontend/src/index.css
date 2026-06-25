@@ -3104,3 +3104,56 @@ h4 {
   font-size: 14px;
   line-height: 1.55;
 }
+
+/* --- Overview: secondary metrics + discovered-workflows table --- */
+.totals-grid.secondary {
+  margin-top: 12px;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.report-table th {
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.report-table td {
+  padding: 11px 10px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  vertical-align: middle;
+}
+
+.report-table tr:last-child td {
+  border-bottom: none;
+}
+
+.rt-name {
+  font-weight: 600;
+}
+
+.rt-apps {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.rt-status {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.rt-status.done {
+  color: var(--success);
+}
