@@ -46,6 +46,51 @@ Codex personalizes and does the engineering; it never weakens safety.
    real reconciled `.xlsx` + reply draft + audit record — under human sign-off.
 6. **Learn** — feedback + corrections are remembered (HydraDB) and folded into the next run.
 
+## Inside a real workflow: daily cash reconciliation (Gmail → Excel)
+
+This is one of the workflows Understudy discovered from raw activity, had Codex build, and
+now runs end-to-end — and you can watch every step of it live on the dashboard.
+
+**The trigger.** Every business morning a *"Daily bank transactions"* email lands in **Gmail**
+with an `.xlsx` attachment. Understudy watched an analyst do the same thing with it three days
+running, flagged the pattern, and Codex turned it into a skill.
+
+**What actually runs** — each step below is a node that lights up on the Skills tab's live
+execution diagram as Codex works through it:
+
+1. **Read the bank attachment** — open the attached `bank_transactions_*.xlsx` and pull every
+   row (txn id, bank amount, ERP amount).
+2. **Match against the Payment Export sheet** — pair each bank row with the finance workbook
+   `cash_recon.xlsx` — the reconciled ledger, not the raw feed.
+3. **Compute the differences** — flag every row where bank ≠ ERP. *(e.g. `tx-1004`: $210 vs
+   $200 → a $10 exception.)*
+4. **Build the reconciliation preview** — fill `Match Status` / `Exception Reason` for each
+   row — but write nothing yet.
+5. **Pause for human approval** — nothing touches a file until you sign off. This guardrail is
+   enforced in code, not by a prompt.
+6. **Write the reconciled spreadsheet** — on approval, create a *new* reconciled `.xlsx`; your
+   source workbook is never overwritten, reviewed rows are never clobbered.
+7. **Draft the reply** — compose a summary email (*"4 matched, 1 exception…"*) as a **draft**.
+   It is never sent automatically.
+8. **Validate + audit** — re-open the output, confirm the guardrails held, and write an audit
+   record of exactly what happened.
+
+**And you can watch all of it, anytime, from the dashboard:**
+- **Activity** streams the raw events Understudy observed (the email arriving, rows changing).
+- **Skills** shows the skill's **live execution diagram** — those 8 nodes lighting up as Codex
+  runs them — alongside the guardrails and the **downloadable artifacts** (the reconciled
+  `.xlsx` and the `.eml` draft you can open).
+- **Memory** streams every HydraDB read/write in real time.
+- **Overview** rolls it into a weekly report: hours freed, throughput multiplier, AI cost.
+
+**Why this is wild.** A human forward-deployed engineer would spend two weeks shadowing this
+analyst and hand-coding the integration. Understudy discovered the workflow from raw activity,
+had **Codex** write a production-grade, guardrailed version, **installed it into Codex as a
+`/daily-cash-reconciliation` workflow**, and ran it — in the time it takes to read this
+paragraph. And the next time `tx-1004` shows up, it already knows that's a known timing
+difference, because you told it once. The dashboard means this never runs as a black box: every
+observation, every step, every file it writes, and every memory it reads is on screen, live.
+
 ## Architecture
 - **Backend** (Python) — `autoskill_agent/`: observe → recommend → generate → run → ops;
   `skillforge_local/`: email/Excel parsing, the **Codex engine** (`llm.py`), the
