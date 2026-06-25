@@ -11,6 +11,25 @@ dashboard** with ROI estimates. Accept one, and **Codex generates a production-g
 — complete with guardrails, validation, and a live execution diagram — then **installs it
 straight into Codex as a runnable `/workflow`**, ready to fire on your next trigger.
 
+## Openable demo artifacts
+
+No login or private workspace is needed to inspect the demo output in this repo:
+
+- **Screenshots:** recommendation discovery, generated skill guardrails, org workflows, and
+  weekly impact overview are shown below.
+- **Generated workbook:** [`cash_recon_2026_06_15_reconciled.xlsx`](workspace/workbooks/generated/cash_recon_2026_06_15_reconciled.xlsx)
+- **Draft reply:** [`cash_recon_2026_06_15_reply.eml`](workspace/mail/drafts/cash_recon_2026_06_15_reply.eml)
+- **Review/audit record:** [`review_cand_daily_cash_recon_001.json`](workspace/reviews/review_cand_daily_cash_recon_001.json)
+
+<p>
+  <img src="docs/screenshots/recommendations.png" alt="Understudy detects a daily cash reconciliation task and installs it into Codex" width="49%">
+  <img src="docs/screenshots/skill-run-feedback.png" alt="Understudy generated skill guardrails, feedback, and run controls" width="49%">
+</p>
+<p>
+  <img src="docs/screenshots/workflows.png" alt="Understudy recommends organization-level workflows to deploy" width="49%">
+  <img src="docs/screenshots/overview.png" alt="Understudy weekly impact overview and skill invocation trend" width="49%">
+</p>
+
 ### One step beyond ambient Codex
 Codex can already *watch* what you're doing — its ambient/computer-use awareness knows your
 activity. Understudy goes a step further: it's a **dashboard that auto-discovers the
