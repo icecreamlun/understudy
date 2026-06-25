@@ -37,6 +37,28 @@ Codex personalizes and does the engineering; it never weakens safety.
 
 ---
 
+## It monitors you — and spots what to automate
+
+Understudy is not a passive log. Once connected, it **continuously monitors** your activity
+across your tools — every email that arrives, every spreadsheet cell that changes, every
+reply you draft — and **actively analyzes it for the parts that can be automated.**
+
+- **Always-on watchers.** Connectors tail your Gmail and your workbooks, turning raw activity
+  into a structured event stream (who did what, to which file, when).
+- **It stitches events into episodes.** A bank email → a spreadsheet update → a summary reply
+  isn't three unrelated events; Understudy joins them into one *episode* of real work.
+- **It detects the repeats.** Pattern detection looks for the same episode recurring — across
+  days and across people — and scores how confident it is that this is a genuine, repeatable
+  workflow worth automating.
+- **It hands you the opportunity, with ROI.** The moment a pattern crosses the bar, it appears
+  on your dashboard as a candidate: how often it happens, the hours it's costing, the
+  throughput you'd gain, the AI cost to run it. You never go hunting for what to automate — it
+  surfaces the shortlist for you.
+
+That's the difference between a logger and a forward-deployed engineer: a logger records what
+happened; **Understudy diagnoses the toil hiding in plain sight and proposes the fix** — then
+Codex builds it and installs it as a Codex workflow.
+
 ## The flow
 1. **Observe** — watch email + spreadsheet activity; detect a repeated workflow.
 2. **Discover (dashboard)** — surface it with ROI (time saved, throughput, AI cost).
