@@ -1,0 +1,15 @@
+{
+  "required_fields": [
+    "type",
+    "execution_id",
+    "skill_id",
+    "skill_version",
+    "actor",
+    "timestamp",
+    "decision",
+    "outputs",
+    "validation",
+    "network_used",
+    "email_sent"
+  ]
+}

@@ -68,8 +68,8 @@ function RecommendationCard({
       <footer className="rec-foot">
         {installed ? (
           <div className="installed-banner">
-            <strong>Skill installed locally.</strong>
-            <code>{result?.local_path ?? '~/.claude/skills'}</code>
+            <strong>Installed into Codex{result?.codex_invoke ? <> as <code>{result.codex_invoke}</code></> : '.'}</strong>
+            <code>{result?.codex_workflow ?? result?.local_path ?? '~/.codex/prompts'}</code>
             {result?.skill_md_preview ? (
               <details className="skill-preview">
                 <summary>Preview SKILL.md</summary>

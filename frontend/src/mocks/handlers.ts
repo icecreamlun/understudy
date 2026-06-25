@@ -102,7 +102,9 @@ const CASH_SKILL = {
     'Human approval before any write',
   ],
   installed_locally: true,
-  local_path: '~/.claude/skills/daily-cash-reconciliation',
+  installed_in_codex: true,
+  codex_invoke: '/daily-cash-reconciliation',
+  local_path: '~/.codex/prompts/daily-cash-reconciliation.md',
   invocations: 37,
   matches: 42,
   graph: {
@@ -134,7 +136,9 @@ function skillFromRec(rec: (typeof RECOMMENDATIONS)[number]) {
     source_apps: rec.source_apps,
     guardrails: ['No email is sent automatically', 'No network access', 'Human approval before any write'],
     installed_locally: true,
-    local_path: `~/.claude/skills/${slug}`,
+    installed_in_codex: true,
+    codex_invoke: `/${slug}`,
+    local_path: `~/.codex/prompts/${slug}.md`,
     invocations: 0,
     matches: 0,
     graph: {
@@ -285,10 +289,12 @@ export const handlers = [
       candidate_id: id,
       skill_id: rec?.workflow_family || id,
       bundle_dir: `workspace/skills/${slug}`,
-      local_path: `~/.claude/skills/${slug}`,
+      local_path: `~/.codex/prompts/${slug}.md`,
+      codex_workflow: `~/.codex/prompts/${slug}.md`,
+      codex_invoke: `/${slug}`,
       installed_files: ['SKILL.md', 'skill.json', 'skill.yaml', 'policy.yaml'],
-      skill_md_preview: `# ${rec?.title ?? 'Generated skill'}\n\nTrigger: ${rec?.trigger ?? ''}\n\nThis skill runs under human approval. It reads the matched input, prepares the change, waits for a reviewer, then writes the local output and records a run.`,
-      planner: 'anthropic',
+      skill_md_preview: `# ${rec?.title ?? 'Generated skill'}\n\nTrigger: ${rec?.trigger ?? ''}\n\nThis skill runs under human approval. It reads the matched input, prepares the change, waits for a reviewer, then writes the output and records a run.`,
+      planner: 'codex',
     })
   }),
   http.get('/api/memory/status', () =>

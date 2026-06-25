@@ -180,7 +180,7 @@ function SkillDetail({
               <SourceChip key={app} source={app} />
             ))}
             <span className={`local-pill ${skill.installed_locally ? 'is-local' : ''}`}>
-              {skill.installed_locally ? 'Installed locally' : 'Generated (not installed)'}
+              {skill.installed_locally ? 'Installed in Codex' : 'Generated (not installed)'}
             </span>
           </div>
         </div>
@@ -191,7 +191,12 @@ function SkillDetail({
       </div>
 
       {skill.description ? <p className="skill-desc">{skill.description}</p> : null}
-      {skill.installed_locally && skill.local_path ? (
+      {skill.installed_locally && skill.codex_invoke ? (
+        <p className="skill-path">
+          Installed as a Codex workflow — run <code>{skill.codex_invoke}</code> inside Codex
+          {skill.local_path ? <> · <code>{skill.local_path}</code></> : null}
+        </p>
+      ) : skill.installed_locally && skill.local_path ? (
         <p className="skill-path">
           <code>{skill.local_path}</code>
         </p>
@@ -286,7 +291,7 @@ export function SkillsView() {
   return (
     <div className="view">
       <p className="view-note">
-        {items.length} skill{items.length === 1 ? '' : 's'} generated · {items.filter(s => s.installed_locally).length} installed locally.
+        {items.length} skill{items.length === 1 ? '' : 's'} generated · {items.filter(s => s.installed_locally).length} installed into Codex.
         {mem ? (
           <span className={`mem-badge ${mem.backend === 'hydradb' ? 'on' : ''}`}>
             <span className="mem-dot" /> Memory: {mem.backend === 'hydradb' ? `HydraDB · ${mem.tenant_id}` : 'local'}
@@ -314,7 +319,7 @@ export function SkillsView() {
                   {skill.source_apps.map(app => (
                     <SourceChip key={app} source={app} />
                   ))}
-                  {skill.installed_locally ? <span className="local-pill is-local">local</span> : null}
+                  {skill.installed_locally ? <span className="local-pill is-local">in Codex</span> : null}
                 </div>
               </button>
             )

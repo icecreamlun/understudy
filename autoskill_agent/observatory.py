@@ -3,11 +3,11 @@
 This module powers the "AI FDE" experience: it watches connected event sources
 (Gmail, Excel), surfaces the observed activity, mines repeated workflows into
 recommendations with ROI estimates, produces a weekly FDE-style report, and —
-only when the user accepts — generates a detailed skill bundle and installs it
-into the user's *local* skills directory (~/.claude/skills).
+only when the user accepts — Codex generates a detailed skill and installs it into
+Codex as a runnable `/slug` workflow (~/.codex/prompts), plus a local bundle.
 
-There is deliberately no "run the workflow" capability here. We give advice and
-a ready-to-run skill.md; the human decides what to do with it.
+The skill can then be run end-to-end (read input, reconcile, write outputs) under
+human approval.
 """
 
 from __future__ import annotations
@@ -27,10 +27,10 @@ from skillforge_local.llm import complete_text
 RUNS_PER_WEEK = 5  # daily workflows run on business days
 SAVE_FACTOR = 0.8  # share of the manual time the skill removes (human still reviews)
 
-# Token-based pricing for the added AI cost (Claude Sonnet 4.6, USD per token).
+# Token-based pricing for the added AI cost (OpenAI GPT via Codex, USD per token).
 PRICE_IN_PER_TOKEN = 3.0 / 1_000_000
 PRICE_OUT_PER_TOKEN = 15.0 / 1_000_000
-# Continuous observation/classification runs on a cheaper model (Haiku 4.5).
+# Continuous observation/classification runs on a cheaper model tier.
 OBS_PRICE_IN_PER_TOKEN = 1.0 / 1_000_000
 OBS_PRICE_OUT_PER_TOKEN = 5.0 / 1_000_000
 OBS_TOKENS_IN = 2500
@@ -319,7 +319,7 @@ def _fallback_summary(totals: dict[str, Any], recs: list[dict[str, Any]]) -> str
 
 
 def _ai_summary(totals: dict[str, Any], recs: list[dict[str, Any]]) -> str:
-    """Have Claude write the executive summary; fall back to a template."""
+    """Have Codex write the executive summary; fall back to a template."""
     try:
         payload = {
             "totals": totals,
@@ -514,7 +514,7 @@ def accept_recommendation_steps(root: Path | str, candidate_id: str, *, planner:
     """
     root = _root(root)
     yield {"event": "progress", "stage": "read", "label": "Reading the detected pattern", "pct": 8}
-    yield {"event": "progress", "stage": "plan", "label": "Drafting the skill with Claude…", "pct": 28}
+    yield {"event": "progress", "stage": "plan", "label": "Drafting the skill with Codex…", "pct": 28}
 
     review = skillgen.create_review_session(root, candidate_id, planner=planner)
     if review.get("status") not in (None, "awaiting_human_review", "installed") and "review_session_id" not in review:
@@ -527,9 +527,9 @@ def accept_recommendation_steps(root: Path | str, candidate_id: str, *, planner:
     memory_backend = planner_info.get("memory_backend") or "local"
     refined = planner_status == "applied"
     if pref_count:
-        plabel = f"Claude applied {pref_count} remembered preference{'s' if pref_count != 1 else ''} from your feedback"
+        plabel = f"Codex applied {pref_count} remembered preference{'s' if pref_count != 1 else ''} from your feedback"
     else:
-        plabel = "Claude refined the plan" if refined else "used the deterministic plan"
+        plabel = "Codex refined the plan" if refined else "used the deterministic plan"
     yield {
         "event": "progress",
         "stage": "compile",
@@ -851,6 +851,10 @@ def _skill_summary(skill: dict[str, Any], *, installed_locally: bool, local_path
     skill_id = skill.get("skill_id", "")
     workflow = skill.get("workflow", {}) if isinstance(skill.get("workflow"), dict) else {}
     steps = workflow.get("steps", []) if isinstance(workflow.get("steps"), list) else []
+    # Surface the Codex install: each skill is installed as a `/slug` Codex workflow.
+    slug = skillgen.kebab(skill_id)
+    codex_prompt = codex_prompts_dir() / f"{slug}.md"
+    installed_in_codex = codex_prompt.exists()
     return {
         "skill_id": skill_id,
         "name": skill.get("name") or skill_id.replace("_", " ").title(),
@@ -860,8 +864,10 @@ def _skill_summary(skill: dict[str, Any], *, installed_locally: bool, local_path
         "step_count": len(steps),
         "source_apps": _skill_apps(skill),
         "guardrails": [str(g) for g in skill.get("guardrails", []) if g],
-        "installed_locally": installed_locally,
-        "local_path": local_path,
+        "installed_locally": installed_locally or installed_in_codex,
+        "installed_in_codex": installed_in_codex,
+        "codex_invoke": f"/{slug}",
+        "local_path": str(codex_prompt) if installed_in_codex else local_path,
         "invocations": int(usage.get("runs", 0) or 0),
         "matches": int(usage.get("matches", 0) or 0),
         "graph": _skill_graph(skill),

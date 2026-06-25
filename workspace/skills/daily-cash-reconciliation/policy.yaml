@@ -1,0 +1,25 @@
+version: 1
+permissions:
+  read:
+    - "workspace/attachments/**"
+    - "workspace/mail/inbox_today/**"
+    - "workspace/mail/sent_today/**"
+    - "workspace/workbooks/cash_recon.xlsx"
+  write:
+    - "workspace/events/**"
+    - "workspace/mail/drafts/**"
+    - "workspace/workbooks/cash_recon.skill_updates.jsonl"
+    - "workspace/workbooks/generated/**"
+  network: false
+  send_email: false
+  overwrite_reviewed_rows: false
+execution:
+  arbitrary_code: false
+  allowed_actions:
+    - draft_email_reply
+    - flag_reconciliation_exceptions
+    - parse_xlsx_attachment
+    - preview_reconciliation_update
+    - require_human_approval
+    - write_audit_log
+    - write_xlsx_update

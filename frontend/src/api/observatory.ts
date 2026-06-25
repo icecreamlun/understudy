@@ -84,6 +84,8 @@ export interface AcceptResult {
   installed_files: string[]
   skill_md_preview: string
   planner: string
+  codex_workflow?: string
+  codex_invoke?: string
 }
 
 export async function getConnections(): Promise<ConnectionStatus[]> {
@@ -273,6 +275,8 @@ export interface SkillItem {
   source_apps: string[]
   guardrails: string[]
   installed_locally: boolean
+  installed_in_codex?: boolean
+  codex_invoke?: string
   local_path: string
   invocations: number
   matches: number

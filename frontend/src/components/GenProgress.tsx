@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 /**
  * Skill-generation progress bar. Snaps to each real stage milestone as SSE
  * events arrive, and eases smoothly toward the next one in between so the long
- * "calling Claude" step still looks alive instead of frozen.
+ * "calling Codex" step still looks alive instead of frozen.
  */
 export function GenProgress({ pct, label }: { pct: number; label: string }) {
   const [display, setDisplay] = useState(0)

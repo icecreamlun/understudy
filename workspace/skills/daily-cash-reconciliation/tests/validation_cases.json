@@ -1,0 +1,68 @@
+{
+  "checks": [
+    {
+      "expected": "passed",
+      "name": "workbook_can_be_reopened"
+    },
+    {
+      "expected": "passed",
+      "name": "only_allowed_sheets_modified"
+    },
+    {
+      "expected": "passed",
+      "name": "no_closed_period_sheets_modified"
+    },
+    {
+      "expected": "passed",
+      "name": "no_reviewed_rows_overwritten"
+    },
+    {
+      "expected": "passed",
+      "name": "reconciled_spreadsheet_created"
+    },
+    {
+      "expected": "passed",
+      "name": "exception_count_matches_summary"
+    },
+    {
+      "expected": "passed",
+      "name": "draft_created_but_not_sent"
+    },
+    {
+      "expected": "passed",
+      "name": "audit_log_written"
+    },
+    {
+      "expected": "passed",
+      "name": "target_rows_match_next_trigger"
+    },
+    {
+      "expected": "passed",
+      "name": "field_populated_amount_diff"
+    },
+    {
+      "expected": "passed",
+      "name": "field_populated_match_status"
+    },
+    {
+      "expected": "passed",
+      "name": "field_populated_exception_reason"
+    },
+    {
+      "expected": "passed",
+      "name": "field_populated_reviewer"
+    },
+    {
+      "expected": "passed",
+      "name": "field_populated_reviewed_at"
+    },
+    {
+      "expected": "passed",
+      "name": "field_populated_source_email_id"
+    },
+    {
+      "expected": "passed",
+      "name": "field_populated_notes"
+    }
+  ]
+}
