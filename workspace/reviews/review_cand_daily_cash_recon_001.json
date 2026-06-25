@@ -6,7 +6,7 @@
     "one_liner": "new daily bank transaction email",
     "workflow_family": "daily_cash_reconciliation"
   },
-  "created_at": "2026-06-25T01:20:14+00:00",
+  "created_at": "2026-06-25T01:31:39+00:00",
   "evidence": {
     "common_fields": [
       "Amount Diff",
@@ -90,8 +90,10 @@
     "warnings": []
   },
   "review_session_id": "review_cand_daily_cash_recon_001",
+  "skill_dir": "/Users/lizhuolun/understudy/workspace/skills/daily-cash-reconciliation",
+  "skill_id": "daily_cash_reconciliation",
   "source_contract_version": "section_a.skill_candidate.v1",
-  "status": "awaiting_human_review",
+  "status": "installed",
   "suggested": {
     "allowed_actions": [
       "compute_amount_diff",
@@ -114,7 +116,7 @@
       "write_workbook_update_after_approval"
     ],
     "approval_mode": "confirm_each_run",
-    "description": "When a daily bank transaction email is available inside the workspace, this local workflow reads the matching XLSX attachment, compares its rows with the finance workbook, prepares Daily Reconciliation updates, separates exceptions for review, requests human approval, and then creates approved local output files without network access or automatic email sending.",
+    "description": "For each daily bank transaction email, this local workflow reads the attached bank spreadsheet, compares its rows with the cash reconciliation workbook, previews updates for the Daily Reconciliation sheet, separates exceptions for review, requires human approval, and then creates approved local output files without network access or automatic email sending.",
     "expected_outcome": {
       "files_created": [
         "workspace/workbooks/generated/{source_workbook}_{event_date}_reconciled.xlsx",
@@ -126,13 +128,14 @@
       ],
       "side_effects": [
         "Do not access the network.",
-        "Do not modify closed-period sheets.",
-        "Do not overwrite reviewed rows.",
         "Do not read outside the workspace.",
         "Do not send email automatically.",
-        "Require human approval before workbook or draft files are created."
+        "Do not modify closed-period sheets.",
+        "Do not overwrite reviewed rows.",
+        "Require human approval before creating output files or applying workbook updates.",
+        "Write only local audit and SkillOps evidence."
       ],
-      "summary": "After human approval, the workflow creates a new reconciled spreadsheet, saves a local unsent reply draft, records exception rows for review, and writes local audit evidence for the run."
+      "summary": "After human approval, the workflow creates a new reconciled spreadsheet, saves an unsent local reply draft, lists rows that need review, and records audit and SkillOps evidence locally."
     },
     "forbidden_actions": [
       "access_network",
@@ -246,15 +249,13 @@
       "return_only_valid_json",
       "workflow_uses_only_allowed_step_types",
       "workflow_uses_only_allowed_action_types",
-      "one_human_approval_step_occurs_before_any_write_output_step",
-      "write_output_step_creates_reconciled_spreadsheet",
-      "validate_step_writes_audit_and_skillops_evidence",
-      "only_daily_reconciliation_output_is_modified_in_generated_copy",
-      "source_workbook_is_not_overwritten",
-      "no_network_access_attempted",
-      "no_email_sent",
+      "human_approval_occurs_before_write_output",
+      "reconciled_spreadsheet_created_after_approval",
+      "only_daily_reconciliation_sheet_modified_in_generated_output",
       "skillops_usage_event_written",
-      "field_populated_skill_run_id"
+      "no_network_access",
+      "no_workspace_external_reads",
+      "no_automatic_email_send"
     ],
     "workflow_steps": [
       {
@@ -267,8 +268,24 @@
         "outputs": [
           "transactions"
         ],
-        "summary": "Read only the bank transaction XLSX attachment available in the workspace and normalize its rows for reconciliation.",
+        "summary": "Read rows from the inbound bank transaction spreadsheet attachment inside the workspace.",
         "title": "Read bank attachment rows",
+        "type": "read_input"
+      },
+      {
+        "id": "load_reconciliation_context",
+        "inputs": [
+          "resources.inputs.target_workbook",
+          "resources.inputs.daily_reconciliation_sheet",
+          "resources.inputs.payment_export_sheet",
+          "resources.inputs.lists_rules_sheet"
+        ],
+        "order": 2,
+        "outputs": [
+          "reconciliation_context"
+        ],
+        "summary": "Read the required workbook sheets used for matching and validation: Daily Reconciliation, Payment Export, and Lists & Rules.",
+        "title": "Load reconciliation context",
         "type": "read_input"
       },
       {
@@ -276,15 +293,13 @@
         "id": "match_transactions_against_payment_export",
         "inputs": [
           "transactions",
-          "resources.inputs.target_workbook",
-          "resources.inputs.payment_export_sheet",
-          "resources.inputs.lists_rules_sheet"
+          "reconciliation_context"
         ],
-        "order": 2,
+        "order": 3,
         "outputs": [
-          "matched_transactions"
+          "match_results"
         ],
-        "summary": "Compare inbound bank rows with the Payment Export sheet and identify matching, missing, duplicate, or amount-mismatched records.",
+        "summary": "Compare bank transaction rows with Payment Export records and prepare proposed matches for the target Daily Reconciliation rows.",
         "target": {
           "sheet": "Daily Reconciliation",
           "workbook": "workspace/workbooks/cash_recon.xlsx"
@@ -294,36 +309,17 @@
       },
       {
         "action_type": "preview_reconciliation_update",
-        "id": "compute_amount_diff",
-        "inputs": [
-          "matched_transactions",
-          "resources.inputs.target_workbook"
-        ],
-        "order": 3,
-        "outputs": [
-          "amount_diff_preview"
-        ],
-        "summary": "Calculate the proposed Amount Diff value for each target row without writing to the workbook.",
-        "target": {
-          "sheet": "Daily Reconciliation",
-          "workbook": "workspace/workbooks/cash_recon.xlsx"
-        },
-        "title": "Compute Amount Diff",
-        "type": "transform"
-      },
-      {
-        "action_type": "preview_reconciliation_update",
         "id": "preview_daily_reconciliation_row_updates",
         "inputs": [
-          "matched_transactions",
-          "amount_diff_preview",
-          "resources.inputs.daily_reconciliation_sheet"
+          "transactions",
+          "match_results",
+          "reconciliation_context"
         ],
         "order": 4,
         "outputs": [
           "reconciliation_preview"
         ],
-        "summary": "Prepare the complete proposed row update set for the next unprocessed trigger rows, excluding reviewed rows and closed-period rows.",
+        "summary": "Build an in-memory preview for allowed target rows only, including Amount Diff, Match Status, Reviewer, Reviewed At, Source Email ID, Skill Run ID, and Notes.",
         "target": {
           "sheet": "Daily Reconciliation",
           "workbook": "workspace/workbooks/cash_recon.xlsx"
@@ -332,159 +328,51 @@
         "type": "transform"
       },
       {
-        "action_type": "preview_reconciliation_update",
-        "id": "fill_match_status",
+        "action_type": "flag_reconciliation_exceptions",
+        "id": "flag_reconciliation_exceptions",
         "inputs": [
-          "reconciliation_preview"
+          "transactions",
+          "reconciliation_preview",
+          "reconciliation_context"
         ],
         "order": 5,
-        "outputs": [
-          "reconciliation_preview"
-        ],
-        "summary": "Set the proposed Match Status for each previewed row based on the reconciliation result.",
-        "target": {
-          "sheet": "Daily Reconciliation",
-          "workbook": "workspace/workbooks/cash_recon.xlsx"
-        },
-        "title": "Fill Match Status",
-        "type": "transform"
-      },
-      {
-        "action_type": "flag_reconciliation_exceptions",
-        "id": "fill_exception_reason",
-        "inputs": [
-          "reconciliation_preview",
-          "resources.inputs.lists_rules_sheet"
-        ],
-        "order": 6,
         "outputs": [
           "exceptions",
           "reconciliation_preview"
         ],
-        "summary": "Classify rows that need human review and populate the proposed Exception Reason values.",
-        "title": "Fill Exception Reason",
+        "summary": "Identify rows that require review and populate proposed Exception Reason values without writing to the workbook.",
+        "title": "Flag reconciliation exceptions",
         "type": "analyze"
       },
       {
-        "action_type": "preview_reconciliation_update",
-        "id": "fill_reviewer",
-        "inputs": [
-          "reconciliation_preview"
-        ],
-        "order": 7,
-        "outputs": [
-          "reconciliation_preview"
-        ],
-        "summary": "Populate the proposed Reviewer field according to local rules for matched and exception rows.",
-        "target": {
-          "sheet": "Daily Reconciliation",
-          "workbook": "workspace/workbooks/cash_recon.xlsx"
-        },
-        "title": "Fill Reviewer",
-        "type": "transform"
-      },
-      {
-        "action_type": "preview_reconciliation_update",
-        "id": "fill_reviewed_at",
-        "inputs": [
-          "reconciliation_preview"
-        ],
-        "order": 8,
-        "outputs": [
-          "reconciliation_preview"
-        ],
-        "summary": "Populate the proposed Reviewed At value for rows eligible for this run, without overwriting existing reviewed values.",
-        "target": {
-          "sheet": "Daily Reconciliation",
-          "workbook": "workspace/workbooks/cash_recon.xlsx"
-        },
-        "title": "Fill Reviewed At",
-        "type": "transform"
-      },
-      {
-        "action_type": "preview_reconciliation_update",
-        "id": "fill_source_email_id",
-        "inputs": [
-          "reconciliation_preview"
-        ],
-        "order": 9,
-        "outputs": [
-          "reconciliation_preview"
-        ],
-        "summary": "Populate the proposed Source Email ID from the local event metadata for the bank transaction email.",
-        "target": {
-          "sheet": "Daily Reconciliation",
-          "workbook": "workspace/workbooks/cash_recon.xlsx"
-        },
-        "title": "Fill Source Email ID",
-        "type": "transform"
-      },
-      {
-        "action_type": "preview_reconciliation_update",
-        "id": "fill_skill_run_id",
-        "inputs": [
-          "reconciliation_preview"
-        ],
-        "order": 10,
-        "outputs": [
-          "reconciliation_preview"
-        ],
-        "summary": "Populate the proposed Skill Run ID so workbook rows can be traced to the local run record.",
-        "target": {
-          "sheet": "Daily Reconciliation",
-          "workbook": "workspace/workbooks/cash_recon.xlsx"
-        },
-        "title": "Fill Skill Run ID",
-        "type": "transform"
-      },
-      {
-        "action_type": "preview_reconciliation_update",
-        "id": "fill_notes",
+        "id": "validate_preview_safety",
         "inputs": [
           "reconciliation_preview",
-          "exceptions"
+          "exceptions",
+          "reconciliation_context"
         ],
-        "order": 11,
+        "order": 6,
         "outputs": [
-          "reconciliation_preview"
+          "preview_validation"
         ],
-        "summary": "Populate proposed Notes values with concise local reconciliation context for exceptions or non-standard matches.",
-        "target": {
-          "sheet": "Daily Reconciliation",
-          "workbook": "workspace/workbooks/cash_recon.xlsx"
-        },
-        "title": "Fill Notes",
-        "type": "transform"
-      },
-      {
-        "action_type": "draft_email_reply",
-        "id": "draft_summary_reply",
-        "inputs": [
-          "reconciliation_preview",
-          "exceptions"
-        ],
-        "order": 12,
-        "outputs": [
-          "summary_reply_draft"
-        ],
-        "summary": "Prepare the local reply draft content with matched counts, exception counts, and review items; do not send or save it as an email file yet.",
-        "title": "Draft summary reply",
-        "type": "draft_output"
+        "summary": "Confirm the preview targets only the next trigger rows, avoids closed-period sheets, and does not overwrite reviewed rows.",
+        "title": "Validate preview safety",
+        "type": "validate"
       },
       {
         "action_type": "require_human_approval",
-        "approval_text": "Apply generated reconciliation updates and create the local output files without sending email?",
+        "approval_text": "Approve creating the reconciled workbook, local reply draft, and local audit records for this daily cash reconciliation run?",
         "id": "require_approval",
         "inputs": [
           "reconciliation_preview",
-          "summary_reply_draft",
-          "exceptions"
+          "exceptions",
+          "preview_validation"
         ],
-        "order": 13,
+        "order": 7,
         "outputs": [
           "approval_decision"
         ],
-        "summary": "Ask a reviewer to approve the proposed workbook update and local reply draft before creating any output files.",
+        "summary": "Ask a reviewer to approve the proposed spreadsheet update and local reply draft content before any output file is created.",
         "title": "Request review",
         "type": "human_approval"
       },
@@ -493,14 +381,15 @@
         "id": "create_reconciled_spreadsheet",
         "inputs": [
           "approval_decision",
-          "reconciliation_preview"
+          "reconciliation_preview",
+          "preview_validation"
         ],
-        "order": 14,
+        "order": 8,
         "outputs": [
           "reconciled_spreadsheet"
         ],
         "requires_step": "require_approval",
-        "summary": "After approval, create a new reconciled spreadsheet in the generated workbooks folder while leaving the source workbook unchanged.",
+        "summary": "After approval, create a new reconciled workbook file with the approved Daily Reconciliation updates. Do not modify closed-period sheets or overwrite reviewed rows.",
         "target": {
           "sheet": "Daily Reconciliation",
           "workbook": "workspace/workbooks/cash_recon.xlsx"
@@ -510,36 +399,38 @@
       },
       {
         "action_type": "draft_email_reply",
-        "id": "create_local_reply_draft",
+        "id": "draft_summary_reply",
         "inputs": [
           "approval_decision",
+          "reconciled_spreadsheet",
+          "exceptions"
+        ],
+        "order": 9,
+        "outputs": [
           "summary_reply_draft"
         ],
-        "order": 15,
-        "outputs": [
-          "summary_reply_draft_file"
-        ],
         "requires_step": "require_approval",
-        "summary": "After approval, save the prepared reply as a local .eml draft file only; do not send it.",
-        "title": "Create local reply draft",
-        "type": "write_output"
+        "summary": "After approval, create a local unsent reply draft with matched counts, exception counts, and rows needing review.",
+        "title": "Draft summary reply",
+        "type": "draft_output"
       },
       {
         "action_type": "write_audit_log",
         "id": "write_audit_log",
         "inputs": [
+          "approval_decision",
           "reconciled_spreadsheet",
-          "summary_reply_draft_file",
-          "exceptions",
-          "approval_decision"
+          "summary_reply_draft",
+          "preview_validation",
+          "exceptions"
         ],
-        "order": 16,
+        "order": 10,
         "outputs": [
           "audit_event",
           "skillops_usage_event"
         ],
         "requires_step": "require_approval",
-        "summary": "Validate the created outputs and append local audit and SkillOps evidence with output paths, counts, approval status, and final checks.",
+        "summary": "Record local evidence for the run, including output paths, validation results, exception counts, and approval status.",
         "title": "Write audit and SkillOps evidence",
         "type": "validate"
       }

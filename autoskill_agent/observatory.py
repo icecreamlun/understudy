@@ -428,12 +428,38 @@ def workflows(root: Path | str) -> list[dict[str, Any]]:
 # ---------------------------------------------------------------------------
 
 def local_skills_dir() -> Path:
-    """The user's local skills directory. Defaults to ~/.claude/skills; override
-    with SKILLFORGE_LOCAL_SKILLS_DIR."""
+    """Local skill-bundle directory (the full generated artifact)."""
     override = os.environ.get("SKILLFORGE_LOCAL_SKILLS_DIR")
     if override:
         return Path(override).expanduser()
     return Path.home() / ".claude" / "skills"
+
+
+def codex_prompts_dir() -> Path:
+    """Codex's custom-prompt directory.
+
+    Files here (``$CODEX_HOME/prompts/*.md``, default ``~/.codex/prompts``) show up
+    inside Codex as invocable ``/name`` workflows — so a skill installed here becomes
+    a Codex workflow you can run directly.
+    """
+    home = os.environ.get("CODEX_HOME")
+    base = Path(home).expanduser() if home else Path.home() / ".codex"
+    return base / "prompts"
+
+
+def install_as_codex_workflow(slug: str, skill_md: str) -> str:
+    """Install a generated skill into Codex as a `/slug` workflow and return its path."""
+    prompts = codex_prompts_dir()
+    prompts.mkdir(parents=True, exist_ok=True)
+    path = prompts / f"{slug}.md"
+    header = (
+        f"# /{slug} — installed by Understudy\n\n"
+        "Run this workflow the way a forward-deployed engineer would: follow the steps "
+        "and guardrails exactly, and pause for human approval before writing any file.\n\n"
+        "---\n\n"
+    )
+    path.write_text(header + (skill_md or ""), encoding="utf-8")
+    return str(path)
 
 
 def _finalize_accept(
@@ -460,7 +486,11 @@ def _finalize_accept(
     _mark_accepted(root, candidate_id)
 
     skill_md = bundle_dir / "SKILL.md"
-    preview = skill_md.read_text(encoding="utf-8")[:1200] if skill_md.exists() else ""
+    skill_md_text = skill_md.read_text(encoding="utf-8") if skill_md.exists() else ""
+
+    # Install the generated skill into Codex as a runnable `/slug` workflow.
+    codex_workflow = install_as_codex_workflow(slug, skill_md_text) if skill_md_text else None
+
     return {
         "status": "installed",
         "candidate_id": candidate_id,
@@ -468,7 +498,9 @@ def _finalize_accept(
         "bundle_dir": str(bundle_dir),
         "local_path": str(local_dir),
         "installed_files": installed_files,
-        "skill_md_preview": preview,
+        "skill_md_preview": skill_md_text[:1200],
+        "codex_workflow": codex_workflow,
+        "codex_invoke": f"/{slug}" if codex_workflow else None,
         "planner": (review.get("planner") or {}).get("status") or (review.get("planner") or {}).get("mode", planner),
     }
 
@@ -711,6 +743,10 @@ def reset_demo(root: Path | str, *, keep_local_skills: bool = False, clear_memor
             if local_dir.exists():
                 shutil.rmtree(local_dir, ignore_errors=True)
                 removed["local_skills"].append(str(local_dir))
+            codex_prompt = codex_prompts_dir() / f"{slug}.md"
+            if codex_prompt.exists():
+                codex_prompt.unlink()
+                removed["local_skills"].append(str(codex_prompt))
 
     if workspace_skills.exists():
         for d in sorted(workspace_skills.iterdir()):
