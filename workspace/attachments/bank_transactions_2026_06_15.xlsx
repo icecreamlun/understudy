@@ -1,0 +1,5 @@
+transaction_id,bank_amount,erp_amount,description
+tx-1001,1200.00,1200.00,Customer payment
+tx-1002,450.00,450.00,Vendor refund
+tx-1003,89.25,89.25,Card settlement
+tx-1004,210.00,200.00,Amount variance

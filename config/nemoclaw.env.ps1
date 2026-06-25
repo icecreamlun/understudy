@@ -1,0 +1,20 @@
+$env:QWEN_MODEL_PATH = "D:\models\qwen3-30b\Qwen3-30B-A3B-Q4_K_M.gguf"
+$env:QWEN_MODEL_TAG = "qwen3-30b-a3b-local"
+$env:OPENCLAW_SOURCE_DIR = "D:\models\openclaw"
+$env:NEMOCLAW_SOURCE_DIR = "D:\models\NemoClaw"
+$env:OPENSHELL_SOURCE_DIR = "D:\models\OpenShell"
+
+$env:OPENCLAW_HOME = "D:\hackathon\.runtime\openclaw-home"
+$env:OPENCLAW_STATE_DIR = "D:\hackathon\.runtime\openclaw-state"
+$env:OPENCLAW_CONFIG_PATH = "D:\hackathon\config\openclaw.json"
+$env:OLLAMA_API_KEY = "ollama-local"
+
+$env:NEMOCLAW_ACCEPT_THIRD_PARTY_SOFTWARE = "1"
+$env:NEMOCLAW_NON_INTERACTIVE = "1"
+$env:NEMOCLAW_YES = "1"
+$env:NEMOCLAW_PROVIDER = "ollama"
+$env:NEMOCLAW_MODEL = $env:QWEN_MODEL_TAG
+$env:NEMOCLAW_CONTEXT_WINDOW = "32768"
+$env:NEMOCLAW_SANDBOX_NAME = "vendor-risk-agent"
+$env:NEMOCLAW_POLICY_MODE = "suggested"
+$env:NEMOCLAW_POLICY_TIER = "balanced"

@@ -1,0 +1,13 @@
+routes:
+  - name: inference.local
+    endpoint: http://host.docker.internal:11434/v1
+    model: qwen3-30b-a3b-local
+    protocols:
+      - openai_chat_completions
+    api_key: ollama-local
+
+# Notes:
+# - This route is for standalone OpenShell inference tests.
+# - NemoClaw manages its own OpenShell provider/route when using `nemoclaw onboard`.
+# - On native Linux, replace host.docker.internal with the reachable host address
+#   for the Ollama daemon or use NemoClaw's managed Ollama proxy path.

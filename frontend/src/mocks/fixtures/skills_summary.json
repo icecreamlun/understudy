@@ -1,0 +1,17 @@
+[
+  {
+    "skill_id": "daily_cash_reconciliation",
+    "skill_name": "Daily Cash Reconciliation Skill",
+    "status": "team_standard"
+  },
+  {
+    "skill_id": "invoice_aging_followup",
+    "skill_name": "Invoice Aging Follow-up",
+    "status": "beta"
+  },
+  {
+    "skill_id": "variance_explanation_draft",
+    "skill_name": "Variance Explanation Draft",
+    "status": "needs_refinement"
+  }
+]

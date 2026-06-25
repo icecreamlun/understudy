@@ -1,0 +1,142 @@
+{
+  "adapter": "xlsx_package_inspection_for_section_a_mock",
+  "closed_period_sheets": [],
+  "sheet_details": {
+    "Bank Attachment Jun15": {
+      "dimension": null,
+      "headers": [
+        "Txn ID",
+        "Bank Ref",
+        "Bank Date",
+        "Bank Description",
+        "Bank Amount",
+        "Counterparty",
+        "Email Thread ID"
+      ],
+      "row_count": 46
+    },
+    "Daily Reconciliation": {
+      "dimension": null,
+      "headers": [
+        "Recon Date",
+        "Txn ID",
+        "Bank Ref",
+        "Bank Date",
+        "Bank Description",
+        "Bank Amount",
+        "ERP Ref",
+        "ERP Date",
+        "ERP Description",
+        "ERP Amount",
+        "Amount Diff",
+        "Match Status",
+        "Exception Reason",
+        "Reviewer",
+        "Reviewed At",
+        "Source Email ID",
+        "Skill Run ID",
+        "Notes"
+      ],
+      "row_count": 181
+    },
+    "Demo Guide": {
+      "dimension": null,
+      "headers": [
+        "SkillForge Local for Finance Teams"
+      ],
+      "row_count": 16
+    },
+    "Email Event Index": {
+      "dimension": null,
+      "headers": [
+        "Event ID",
+        "Timestamp",
+        "Actor",
+        "Direction",
+        "Thread ID",
+        "Message ID",
+        "Subject",
+        "Attachment",
+        "Intent",
+        "Summary"
+      ],
+      "row_count": 8
+    },
+    "Expected Skill Output": {
+      "dimension": null,
+      "headers": [
+        "Txn ID",
+        "Expected Match Status",
+        "Expected Exception Reason",
+        "Expected Skill Run ID",
+        "Notes"
+      ],
+      "row_count": 46
+    },
+    "Lists & Rules": {
+      "dimension": null,
+      "headers": [
+        "Finance SkillForge Demo Rules"
+      ],
+      "row_count": 21
+    },
+    "Payment Export": {
+      "dimension": null,
+      "headers": [
+        "ERP Ref",
+        "ERP Date",
+        "ERP Description",
+        "ERP Amount",
+        "Txn ID",
+        "Counterparty",
+        "Batch"
+      ],
+      "row_count": 168
+    },
+    "SkillOps Metrics": {
+      "dimension": null,
+      "headers": [
+        "Skill",
+        "Status",
+        "Users 7d",
+        "Matches 7d",
+        "Runs 7d",
+        "Run / Match",
+        "Success Rate",
+        "Reject Rate",
+        "Last Used",
+        "Recommendation"
+      ],
+      "row_count": 5
+    },
+    "Spreadsheet Audit History": {
+      "dimension": null,
+      "headers": [
+        "Audit ID",
+        "Timestamp",
+        "Actor",
+        "Event Type",
+        "Workbook",
+        "Sheet",
+        "Rows Changed",
+        "Columns Changed",
+        "Thread ID",
+        "Linked Email ID",
+        "Summary"
+      ],
+      "row_count": 11
+    }
+  },
+  "sheets": [
+    "Demo Guide",
+    "Daily Reconciliation",
+    "Bank Attachment Jun15",
+    "Payment Export",
+    "Spreadsheet Audit History",
+    "Email Event Index",
+    "SkillOps Metrics",
+    "Expected Skill Output",
+    "Lists & Rules"
+  ],
+  "workbook": "workspace/workbooks/skillforge_finance_demo_cash_recon.xlsx"
+}

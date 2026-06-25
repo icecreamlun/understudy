@@ -1,0 +1,14 @@
+From: finance-team@example.local
+To: bank-ops@example.local
+Subject: Re: Daily bank transactions - June 15
+Date: 2026-06-21T23:44:10+00:00
+Message-ID: <draft-msg_bank_2026_06_15@skillforge.local>
+In-Reply-To: <msg_bank_2026_06_15@skillforge.local>
+References: <msg_bank_2026_06_15@skillforge.local>
+X-SkillForge-Thread-ID: thread_daily_cash_2026_06_15
+X-SkillForge-Output-Workbook: workspace/workbooks/generated/cash_recon_2026_06_15_reconciled_6.xlsx
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+Bank transaction update complete. Created updated spreadsheet: cash_recon_2026_06_15_reconciled.xlsx. 3 transactions matched; 1 exception requires review before sending.

@@ -1,0 +1,9 @@
+{
+  "adapter": "csv_rows_with_xlsx_filename_for_local_demo",
+  "closed_period_sheets": [],
+  "sheets": [
+    "Daily Reconciliation",
+    "Payment Export"
+  ],
+  "workbook": "/Users/lizhuolun/cursor/hackathons/fde-agent/workspace/workbooks/cash_recon.xlsx"
+}

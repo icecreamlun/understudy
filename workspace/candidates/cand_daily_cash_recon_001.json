@@ -1,0 +1,116 @@
+{
+  "candidate_id": "cand_daily_cash_recon_001",
+  "candidate_name": "Daily Cash Reconciliation Workflow",
+  "candidate_quality": {
+    "episode_count": 3,
+    "missing_information": [],
+    "similarity_score": 0.93,
+    "unique_actor_count": 2
+  },
+  "confidence": 0.93,
+  "created_at": "2026-06-14T10:00:00-07:00",
+  "evidence": {
+    "actors": [
+      "analyst_1",
+      "analyst_2"
+    ],
+    "episodes": [
+      "episode_cash_recon_2026_06_12",
+      "episode_cash_recon_2026_06_13",
+      "episode_cash_recon_2026_06_14"
+    ],
+    "input_event_ids": [
+      "event_email_bank_2026_06_12",
+      "event_email_bank_2026_06_13",
+      "event_email_bank_2026_06_14"
+    ],
+    "sent_event_ids": [
+      "event_sent_summary_001",
+      "event_sent_summary_002",
+      "event_sent_summary_003"
+    ],
+    "spreadsheet_event_ids": [
+      "event_sheet_cash_001",
+      "event_sheet_cash_002",
+      "event_sheet_cash_003"
+    ]
+  },
+  "observed_actions": [
+    {
+      "headers": [
+        "Bank Amount",
+        "ERP Amount",
+        "Match Status",
+        "Exception Reason",
+        "Reviewer"
+      ],
+      "sheet": "Daily Reconciliation",
+      "type": "spreadsheet_update",
+      "workbook": "cash_recon.xlsx"
+    },
+    {
+      "reply_pattern": "matched_count_and_exception_count_summary",
+      "type": "sent_reply"
+    }
+  ],
+  "pattern_type": "email_to_spreadsheet_to_reply",
+  "status": "ready_for_human_review",
+  "suggested_guardrails": [
+    "Do not send email automatically",
+    "Do not overwrite reviewed rows",
+    "Do not modify closed-period sheets",
+    "Do not access network",
+    "Require human approval before workbook changes"
+  ],
+  "suggested_inputs": [
+    {
+      "name": "daily_bank_transaction_file",
+      "required": true,
+      "source": "inbound_email_attachment",
+      "type": "spreadsheet_attachment"
+    },
+    {
+      "name": "cash_recon_workbook",
+      "path_hint": "workspace/workbooks/cash_recon.xlsx",
+      "required": true,
+      "type": "xlsx_workbook"
+    }
+  ],
+  "suggested_outputs": [
+    {
+      "name": "updated_reconciliation_sheet",
+      "target_hint": "cash_recon.xlsx / Daily Reconciliation",
+      "type": "xlsx_update"
+    },
+    {
+      "name": "exception_summary_reply",
+      "target_hint": "workspace/mail/drafts/",
+      "type": "email_draft"
+    }
+  ],
+  "suggested_trigger": {
+    "conditions": [
+      {
+        "type": "subject_pattern",
+        "value": "Daily bank transactions"
+      },
+      {
+        "type": "has_attachment_matching",
+        "value": "bank_transactions_*.xlsx"
+      },
+      {
+        "type": "sender_pattern",
+        "value": "bank-ops@example.local"
+      }
+    ],
+    "event_type": "email_received"
+  },
+  "summary": {
+    "business_domain": "finance",
+    "detected_frequency": "daily",
+    "episode_count": 3,
+    "one_liner": "Analysts repeatedly process daily bank transaction emails by updating cash_recon.xlsx and sending exception summaries.",
+    "unique_actors": 2,
+    "workflow_family": "cash_reconciliation"
+  }
+}

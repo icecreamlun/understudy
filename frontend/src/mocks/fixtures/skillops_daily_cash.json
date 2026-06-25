@@ -1,0 +1,13 @@
+{
+  "skill_id": "daily_cash_reconciliation",
+  "skill_name": "Daily Cash Reconciliation Skill",
+  "users": 3,
+  "matches": 12,
+  "runs": 10,
+  "run_rate": 0.83,
+  "success_rate": 1.0,
+  "reject_rate": 0.08,
+  "last_used": "2026-06-15T08:21:00-07:00",
+  "status": "team_standard",
+  "started_at": null
+}

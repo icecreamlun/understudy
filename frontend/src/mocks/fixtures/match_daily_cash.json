@@ -1,0 +1,17 @@
+{
+  "match_id": "match_daily_cash_2026_06_15",
+  "skill_id": "daily_cash_reconciliation",
+  "skill_version": 1,
+  "trigger_event_id": "event_email_bank_2026_06_15",
+  "matched_at": "2026-06-15T08:04:00-07:00",
+  "match_confidence": 0.97,
+  "match_reasons": [
+    "Subject contains 'Daily bank transactions'",
+    "Attachment matches bank_transactions_*.xlsx",
+    "cash_recon.xlsx exists",
+    "Daily Reconciliation sheet exists",
+    "No reconciliation row exists for this date"
+  ],
+  "status": "awaiting_preview",
+  "skill_name": "Daily Cash Reconciliation Skill"
+}
