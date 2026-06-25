@@ -15,6 +15,7 @@ straight into Codex as a runnable `/workflow`**, ready to fire on your next trig
 
 No login or private workspace is needed to inspect the demo output in this repo:
 
+- **Live demo video:** https://youtu.be/RYGWzJ3iu-g
 - **Screenshots:** recommendation discovery, generated skill guardrails, org workflows, and
   weekly impact overview are shown below.
 - **Generated workbook:** [`cash_recon_2026_06_15_reconciled.xlsx`](workspace/workbooks/generated/cash_recon_2026_06_15_reconciled.xlsx)
